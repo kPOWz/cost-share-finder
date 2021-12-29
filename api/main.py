@@ -1,9 +1,13 @@
 from typing import Optional
 from fastapi import FastAPI
 from pydantic import BaseModel
-import ecs
+from starlette.requests import Request
+import api.ecs as ecs
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # TODO: find out about stricter deserialization & validation constraints
 class Item(BaseModel):
@@ -13,9 +17,11 @@ class Item(BaseModel):
 
 @app.get("/")
 # TODO: make this an ECS metadata passthrough
-def read_root():
+def read_root(request : Request):
+    request.base_url
     # return {"Hello": "World"}
-    ecs.get_task_metadata()  # config file or docker container setting to make this work in one form or another locally - like a local json file ? 
+    return ecs.get_task_metadata(request.base_url)
+    # ecs.get_task_metadata()  # config file or docker container setting to make this work in one form or another locally - like a local json file ? 
 
 # TODO: copilot & working with secrets (copilot addons ? )
 # TODO: oauth 2 authorization flow request
