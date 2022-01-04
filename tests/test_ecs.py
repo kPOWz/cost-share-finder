@@ -13,9 +13,9 @@ class ElasticContainerServiceTest(unittest.TestCase):
 
         os_getenv.return_value = ecs_metadata_url
 
-        ECS.get_task_metadata('http:anything')
+        ECS.get_task_metadata()
 
-        os_getenv.assert_called_once_with(ecs_metadata_autoinjected_environment_var)
+        os_getenv.assert_called_once_with(ecs_metadata_autoinjected_environment_var, None)
  
     @unittest.mock.patch('os.getenv') # mock the whole module instead?
     @unittest.mock.patch('requests.get')
@@ -25,24 +25,13 @@ class ElasticContainerServiceTest(unittest.TestCase):
 
         os_getenv.return_value = ecs_metadata_url
 
-        ECS.get_task_metadata('http:anything')
+        ECS.get_task_metadata()
 
         # should this be called async instead?
         requests_get.assert_called_once_with(ecs_task_metadata_url)
+
     
-    @unittest.mock.patch('os.getenv') # mock the whole module instead?
-    @unittest.mock.patch('requests.get')
-    def testUsesDefaultWhenMetaDataEnvironmentVariableForTaskUnavailable(self, requests_get, os_getenv):
-        request_url = 'http://anything'
-        ecs_task_metadata_url = "{}/static/missing_env.json".format(request_url)
-
-        os_getenv.return_value = None
-
-        ECS.get_task_metadata(request_url)
-
-        requests_get.assert_called_once_with(ecs_task_metadata_url)
-    
-    @unittest.mock.patch('os.getenv') # mock the whole module instead?
+    @unittest.mock.patch('os.getenv')
     @unittest.mock.patch('requests.get')
     @unittest.mock.patch('requests.Response', autospec=True)
     def testReturnsJsonMetadata(self, requests_Response_automock, requests_get, os_getenv):
@@ -58,7 +47,7 @@ class ElasticContainerServiceTest(unittest.TestCase):
         requests_get.return_value = requests_Response_automock
         requests_Response_automock.json.return_value = expected_json
 
-        observed = ECS.get_task_metadata('http:anything')
+        observed = ECS.get_task_metadata()
 
         requests_Response_automock.json.assert_called_once()
         self.assertEquals(expected_json, observed)
@@ -73,6 +62,23 @@ class ElasticContainerServiceTest(unittest.TestCase):
         os_getenv.return_value = ecs_metadata_url
         requests_get.return_value = requests_Response_automock
 
-        ECS.get_task_metadata('http:anything')
+        ECS.get_task_metadata()
 
         requests_Response_automock.raise_for_status.assert_called_once()
+
+    @unittest.mock.patch('os.getenv')
+    @unittest.mock.patch('requests.get')
+    @unittest.mock.patch('requests.Response', autospec=True)
+    def testReturnsDefaultJson(self, requests_Response_automock, requests_get, os_getenv):
+        expected_json = {
+            "missingEnv": "ECS_CONTAINER_METADATA_URI_V4"
+        }
+
+        os_getenv.return_value = None
+        requests_get.return_value = requests_Response_automock
+        requests_Response_automock.json.return_value = expected_json
+
+        observed = ECS.get_task_metadata()
+
+        requests_Response_automock.json.assert_not_called()
+        self.assertEquals(expected_json, observed)

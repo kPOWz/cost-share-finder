@@ -53,6 +53,11 @@ docs root - 127.0.0.1:60128  -> http://127.0.0.1:8000/docs
 `docker run -d --name container -p 8080:80 myimage`
 http://127.0.0.1:8080/items/5?q=somequery
 
+## Run locally w/ Docker Compose
+# Builds images before starting containers.
+`start-dev.sh` or `docker-compose up -d --build`
+
+
 ## Deploy
 `copilot deploy -e test -w api`
 specifcy copilot workload (service) and copilot environment
