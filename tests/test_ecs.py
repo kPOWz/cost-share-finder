@@ -30,6 +30,20 @@ class ElasticContainerServiceTest(unittest.TestCase):
         # should this be called async instead?
         requests_get.assert_called_once_with(ecs_task_metadata_url)
 
+     
+    @unittest.mock.patch('os.getenv') # mock the whole module instead?
+    @unittest.mock.patch('requests.get')
+    def testReliesOnUrlBuilderLib(self, requests_get, os_getenv):
+        ecs_metadata_url = 'https://www.aws_base_url.fake/'
+        ecs_task_metadata_url = 'https://www.aws_base_url.fake/task'
+
+        os_getenv.return_value = ecs_metadata_url
+
+        ECS.get_task_metadata()
+
+        # should this be called async instead?
+        requests_get.assert_called_once_with(ecs_task_metadata_url)
+
     
     @unittest.mock.patch('os.getenv')
     @unittest.mock.patch('requests.get')
@@ -65,6 +79,7 @@ class ElasticContainerServiceTest(unittest.TestCase):
         ECS.get_task_metadata()
 
         requests_Response_automock.raise_for_status.assert_called_once()
+
 
     @unittest.mock.patch('os.getenv')
     @unittest.mock.patch('requests.get')
