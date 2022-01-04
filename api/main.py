@@ -17,7 +17,6 @@ def read_root(request : Request):
     # return {"Hello": "World"}
     return ecs.get_task_metadata()
 
-# TODO: copilot & working with secrets (copilot addons ? )
 # TODO: oauth 2 authorization flow request
 # TODO: oauth 2 callback
 # TODO: oauth 2 current user endpoint
