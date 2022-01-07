@@ -28,8 +28,12 @@ exec: true     # Enable running commands in your container.
 
 # Optional fields for more advanced use-cases.
 #
-#variables:                    # Pass environment variables as key value pairs.
+variables:                    # Pass environment variables as key value pairs.
 #  LOG_LEVEL: info
+  JD_WELL_KNOWN_URL: 'https://signin.johndeere.com/oauth2/aus78tnlaysMraFhC1t7/.well-known/oauth-authorization-server'
+  JD_CLIENT_REDIRECT_URI: 'http://demo-publi-b2558yqhqevk-1579261678.ca-central-1.elb.amazonaws.com/jdcallbackk/'
+  JD_API_CATALOG_URI: 'https://sandboxapi.deere.com/platform/'
+  #JD_API_CATALOG_URI = 'https://partnerapi.deere.com/platform/'
 
 secrets:                      # Pass secrets from AWS Systems Manager (SSM) Parameter Store.
   # GITHUB_TOKEN: GITHUB_TOKEN  # The key is the name of the environment variable, the value is the name of the SSM parameter.

@@ -6,6 +6,8 @@ FROM python:slim
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # Turns off buffering for easier container logging
+# each running process writes its event stream, unbuffered, to stdout
+# log destinations are not visible to or configurable by the app, and instead are completely managed by the execution environment
 ENV PYTHONUNBUFFERED=1
 
 # Install pip requirements
